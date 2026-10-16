@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>人工客服工作台</title>
+  <link rel="stylesheet" href="/static/agent.css">
+</head>
+<body>
+  <div class="agent-app">
+    <!-- 顶部：身份与操作 -->
+    <header class="agent-header">
+      <div class="agent-brand">🧑‍💼 人工客服工作台</div>
+      <div class="agent-header-right">
+        <button id="agentNameBtn" class="agent-name-chip" type="button" title="点击修改客服姓名">👤 <span id="agentNameText">客服1</span></button>
+        <a class="agent-back" href="/admin">🛡️ 管理后台</a>
+        <a class="agent-back" href="/">← 返回用户端</a>
+      </div>
+    </header>
+
+    <div class="agent-body">
+      <!-- 左侧：会话列表 -->
+      <aside class="agent-sidebar">
+        <div class="agent-sidebar-head">
+          <span>会话（<b id="convCount">0</b>）</span>
+          <button id="refreshConvsBtn" class="mini-btn" type="button">刷新</button>
+        </div>
+        <div class="agent-conv-list" id="convList"></div>
+      </aside>
+
+      <!-- 中间：聊天窗口 -->
+      <main class="agent-chat">
+        <header class="agent-chat-header" id="chatHeader">
+          <div class="agent-chat-peer">
+            <div class="avatar avatar-user" id="chatAvatar">🧑</div>
+            <div>
+              <div class="agent-chat-title" id="chatTitle">请选择左侧会话</div>
+              <div class="agent-chat-status" id="chatStatus">—</div>
+            </div>
+          </div>
+          <div class="agent-chat-actions">
+            <span class="conv-tag" id="chatTag">—</span>
+            <button id="returnQueueBtn" class="mini-btn danger" type="button" hidden>放回排队</button>
+          </div>
+        </header>
+
+        <div class="agent-message-list" id="messageList">
+          <div class="agent-empty">从左侧选择会话开始服务</div>
+        </div>
+
+        <footer class="agent-input-area">
+          <div class="toolbar">
+            <button id="quickReplyBtn" class="tool-btn" type="button" title="快捷回复">⚡ 快捷回复</button>
+            <span class="agent-typing-hint" id="userTypingHint" hidden>对方正在输入…</span>
+          </div>
+          <div class="agent-input-row">
+            <div class="input-wrap">
+              <textarea id="msgInput" rows="1" placeholder="输入回复内容…（Enter 发送，Shift+Enter 换行）"></textarea>
+              <button id="clearInputBtn" class="input-clear" type="button" hidden>✕</button>
+            </div>
+            <button id="sendBtn" class="send-btn" type="button">发送</button>
+          </div>
+        </footer>
+      </main>
+
+      <!-- 右侧：会话信息 + 快捷回复管理 -->
+      <aside class="agent-panel">
+        <section class="agent-card">
+          <h3>会话信息</h3>
+          <label>标签</label>
+          <input id="metaTag" type="text" placeholder="如：售后 / 投诉 / 咨询">
+          <label>备注</label>
+          <textarea id="metaNote" rows="4" placeholder="记录处理要点，方便复盘…"></textarea>
+          <button id="metaSaveBtn" class="mini-btn primary" type="button">保存</button>
+        </section>
+
+        <section class="agent-card">
+          <div class="agent-card-head">
+            <h3>快捷回复</h3>
+            <button id="addQrBtn" class="mini-btn primary" type="button">＋ 新增</button>
+          </div>
+          <div id="qrList" class="agent-qr-list"></div>
+        </section>
+      </aside>
+    </div>
+  </div>
+
+  <!-- 弹窗容器 -->
+  <div id="modalOverlay" class="modal-overlay hidden">
+    <div class="modal" id="modalBox"></div>
+  </div>
+
+  <!-- 轻提示 -->
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="/static/agent.js"></script>
+</body>
+</html>

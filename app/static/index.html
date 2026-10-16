@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>智能人工客服</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="app">
+    <!-- 左侧：会话列表 -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand">🤖 智能客服</div>
+        <button id="newChatBtn" class="icon-btn" title="新建会话">＋</button>
+      </div>
+      <div class="search-box">
+        <div class="input-wrap input-single">
+          <input id="searchInput" type="text" placeholder="搜索会话">
+          <button id="searchClearBtn" class="input-clear" type="button" title="清空" aria-label="清空" hidden>✕</button>
+        </div>
+      </div>
+      <div class="conversation-list" id="conversationList"></div>
+      <div class="sidebar-footer">
+        <button id="agentOpenBtn" class="kb-nav-btn" type="button">🧑‍💼 客服工作台</button>
+        <button id="kbOpenBtn" class="kb-nav-btn" type="button">📚 知识库管理</button>
+      </div>
+    </aside>
+
+    <!-- 右侧：聊天窗口 -->
+    <main class="chat">
+      <header class="chat-header">
+        <div class="peer">
+          <div class="avatar avatar-bot" id="peerAvatar">🤖</div>
+          <div class="peer-info">
+            <div class="peer-name" id="peerName">智能客服</div>
+            <div class="peer-status" id="peerStatus">
+              <span class="typing-dots"><i></i><i></i><i></i></span>
+              <span id="peerStatusText">对方正在输入…</span>
+            </div>
+          </div>
+        </div>
+        <div class="header-actions">
+          <span class="conv-tag" id="convTag">机器人</span>
+          <button id="transferBtn" class="transfer-btn">转人工客服</button>
+        </div>
+      </header>
+
+      <div class="message-list" id="messageList">
+        <div class="empty-hint" id="emptyHint">👋 你好，我是智能客服，请问有什么可以帮您？<br>可以试试问：怎么退货？多久发货？保修多久？</div>
+      </div>
+
+      <footer class="chat-footer">
+        <div class="toolbar">
+          <button id="imageBtn" class="tool-btn" title="发送图片">🖼️</button>
+          <button id="cardBtn" class="tool-btn" title="发送链接卡片">🔗</button>
+          <div class="rating" id="ratingWidget" title="满意度评价">
+            <span class="rating-label">服务评价</span>
+            <span class="stars" id="stars"></span>
+            <span class="rating-state" id="ratingState"></span>
+          </div>
+        </div>
+        <div class="input-row">
+          <div class="input-wrap">
+            <textarea id="messageInput" rows="1" placeholder="请输入消息…（Enter 发送，Shift+Enter 换行）"></textarea>
+            <button id="clearInputBtn" class="input-clear" type="button" title="清空输入" aria-label="清空输入" hidden>✕</button>
+          </div>
+          <button id="sendBtn" class="send-btn">发送</button>
+        </div>
+      </footer>
+    </main>
+
+    <!-- 知识库管理 -->
+    <main class="kb-view" id="kbView" hidden>
+      <header class="kb-header">
+        <div class="kb-title">📚 知识库管理</div>
+        <div class="kb-header-actions">
+          <button id="kbRefreshBtn" class="modal-btn plain" type="button">刷新</button>
+          <button id="kbBackBtn" class="transfer-btn" type="button">← 返回对话</button>
+        </div>
+      </header>
+
+      <div class="kb-body">
+        <section class="kb-card">
+          <div class="kb-card-head">
+            <h3>上传文档</h3>
+            <span class="kb-tip">支持 PDF / Word(.docx) / TXT / Markdown / HTML，可多选批量上传，单文件 ≤ 20MB</span>
+          </div>
+          <div class="upload-row">
+            <input id="kbFileInput" type="file" multiple
+                   accept=".pdf,.docx,.txt,.md,.markdown,.html,.htm">
+            <button id="kbUploadBtn" class="send-btn" type="button">上传并解析</button>
+          </div>
+          <div id="kbUploadList" class="kb-upload-list"></div>
+        </section>
+
+        <section class="kb-stats" id="kbStats"></section>
+
+        <section class="kb-card">
+          <div class="kb-card-head">
+            <h3>文档列表</h3>
+            <span class="kb-tip">停用后该文档的切片不再参与检索；更新会重新解析并重建向量</span>
+          </div>
+          <div class="kb-table-wrap">
+            <table class="kb-table" id="kbDocTable">
+              <thead>
+                <tr>
+                  <th>文件名</th>
+                  <th>类型</th>
+                  <th>大小</th>
+                  <th>切片</th>
+                  <th>状态</th>
+                  <th>上传时间</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div id="kbDocEmpty" class="kb-empty">暂无文档，先上传几份试试吧</div>
+        </section>
+
+        <section class="kb-card">
+          <div class="kb-card-head">
+            <h3>效果测试</h3>
+            <span class="kb-tip">输入测试问题，预览命中的知识切片与相似度，方便调优</span>
+          </div>
+          <div class="test-row">
+            <div class="input-wrap input-single">
+              <input id="kbTestInput" type="text" placeholder="例如：退货政策是什么？多久能发货？">
+              <button id="kbTestClearBtn" class="input-clear" type="button" title="清空输入" aria-label="清空输入" hidden>✕</button>
+            </div>
+            <select id="kbTopK">
+              <option value="3">3 条</option>
+              <option value="5" selected>5 条</option>
+              <option value="10">10 条</option>
+            </select>
+            <button id="kbTestBtn" class="send-btn" type="button">测试检索</button>
+          </div>
+          <div id="kbTestResults"></div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <!-- 弹窗容器 -->
+  <div id="modalOverlay" class="modal-overlay hidden">
+    <div class="modal" id="modalBox"></div>
+  </div>
+
+  <!-- 轻提示 -->
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

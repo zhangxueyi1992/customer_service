@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+chromadb
+fastembed
+pypdf
+python-docx
+python-multipart
+httpx
+websockets

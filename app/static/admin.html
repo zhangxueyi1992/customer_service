@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>管理后台 · 智能人工客服</title>
+  <link rel="stylesheet" href="/static/admin.css">
+</head>
+<body>
+  <!-- 登录界面 -->
+  <div id="loginView" class="admin-login hidden">
+    <div class="login-card">
+      <h2>🛡️ 管理后台</h2>
+      <p class="login-tip">请输入管理员账号登录</p>
+      <label>账号</label>
+      <input id="loginName" type="text" placeholder="管理员" value="管理员">
+      <label>密码</label>
+      <input id="loginPass" type="password" placeholder="请输入密码">
+      <div class="login-error" id="loginError"></div>
+      <button id="loginBtn" class="send-btn" type="button">登录</button>
+    </div>
+  </div>
+
+  <!-- 主界面 -->
+  <div id="mainView" class="admin-app hidden">
+    <header class="admin-header">
+      <div class="admin-brand">🛡️ 管理与统计</div>
+      <div class="admin-header-right">
+        <span id="adminUserLabel" class="admin-user-label">管理员</span>
+        <a class="admin-back" href="/agent">← 客服工作台</a>
+        <button id="logoutBtn" class="admin-logout" type="button">退出登录</button>
+      </div>
+    </header>
+
+    <div class="admin-tabs">
+      <button class="admin-tab active" data-tab="stats" type="button">📊 指标总览</button>
+      <button class="admin-tab" data-tab="records" type="button">💬 对话记录</button>
+      <button class="admin-tab" data-tab="users" type="button">👥 账号管理</button>
+    </div>
+
+    <main class="admin-body">
+      <!-- 指标总览 -->
+      <section id="tab-stats" class="admin-section">
+        <div class="admin-section-head">
+          <h3>关键指标</h3>
+          <div class="admin-filter">
+            <input id="statsFrom" type="date">
+            <span>至</span>
+            <input id="statsTo" type="date">
+            <button id="statsRefreshBtn" class="mini-btn primary" type="button">刷新</button>
+          </div>
+        </div>
+        <div class="stat-cards" id="statCards"></div>
+        <div class="stat-cards secondary" id="statCards2"></div>
+      </section>
+
+      <!-- 对话记录 -->
+      <section id="tab-records" class="admin-section hidden">
+        <div class="admin-section-head">
+          <h3>对话记录</h3>
+          <div class="admin-filter">
+            <input id="recKeyword" type="text" placeholder="关键词（标题/消息内容）">
+            <select id="recStatus">
+              <option value="">全部状态</option>
+              <option value="bot">机器人</option>
+              <option value="queued">排队中</option>
+              <option value="human">人工服务</option>
+            </select>
+            <input id="recFrom" type="date">
+            <span>至</span>
+            <input id="recTo" type="date">
+            <button id="recSearchBtn" class="mini-btn primary" type="button">查询</button>
+            <button id="recExportCsv" class="mini-btn" type="button">导出 CSV</button>
+            <button id="recExportJson" class="mini-btn" type="button">导出 JSON</button>
+          </div>
+        </div>
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>标题</th>
+                <th>状态</th>
+                <th>客服</th>
+                <th>消息数</th>
+                <th>最后消息</th>
+                <th>创建时间</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="recTbody"></tbody>
+          </table>
+        </div>
+        <div id="recEmpty" class="admin-empty">暂无符合条件的记录</div>
+      </section>
+
+      <!-- 账号管理 -->
+      <section id="tab-users" class="admin-section hidden">
+        <div class="admin-section-head">
+          <h3>账号管理</h3>
+          <button id="addUserBtn" class="mini-btn primary" type="button">＋ 新增账号</button>
+        </div>
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>账号</th>
+                <th>角色</th>
+                <th>状态</th>
+                <th>创建时间</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="userTbody"></tbody>
+          </table>
+        </div>
+        <div id="userEmpty" class="admin-empty">暂无账号</div>
+      </section>
+    </main>
+  </div>
+
+  <!-- 弹窗容器 -->
+  <div id="modalOverlay" class="modal-overlay hidden">
+    <div class="modal" id="modalBox"></div>
+  </div>
+
+  <!-- 轻提示 -->
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="/static/admin.js"></script>
+</body>
+</html>
